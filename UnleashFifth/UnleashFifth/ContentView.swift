@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var selectedColorIndex: Int? = nil
+    @State private var selectedImageIndex: Int? = nil
     let colors: [Color] = [.blue, .pink, .cyan, .purple, .orange, .yellow]
     @State private var fetchedImage: Image?
     @StateObject var viewModel = ContentViewModel()
@@ -16,67 +16,70 @@ struct ContentView: View {
     var body: some View {
         ScrollViewReader { scrollProxy in
             ZStack(alignment: .bottom) {
-                    // Full-Screen Big Collection View
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 0) {
-                        ForEach(colors.indices, id: \.self) { index in
-                            ZStack {
-                                colors[index]
-                                    .ignoresSafeArea()
-                                    .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height) // Full-screen width and height
-                                Text("\(index + 1)")
-                                    .font(.system(size: 150))
-                                    .fontWeight(.bold)
-                                    .foregroundColor(.white)
-                            }
-                            .id(index) // Attach an ID for scroll synchronization
-                        }
-                    }
-                }
-
-                    // Small Collection View (Menu)
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 10) {
-                        ForEach(colors.indices, id: \.self) { index in
-                            ZStack {
-                                if selectedColorIndex == index {
-                                        // Highlight selection
-                                    RoundedRectangle(cornerRadius: 10)
-                                        .stroke(Color.red, lineWidth: 4)
-                                        .frame(width: 50, height: 50)
-                                }
-                                fetchedImage
-                                    .frame(width: 50, height: 50)
-                                    .cornerRadius(10)
-                                Text("\(index + 1)")
-                                    .font(.system(size: 13))
-                                    .fontWeight(.bold)
-                                    .foregroundColor(.white)
-                            }
-                            .onTapGesture {
-                                withAnimation {
-                                    selectedColorIndex = index
-                                    scrollProxy.scrollTo(index, anchor: .top) // Sync scroll to big view
-                                }
-                            }
-                        }
-                    }
-                    .padding()
-                    .background(Color.green)
-                    .frame(height: 70) // Fixed height for the menu
-                }
+                imageBigHScroll
+                imageSmallHScroll
+                    .environment(\.scrollViewProxy, scrollProxy)
             }
-        }
-        .onAppear {
+        }.onAppear {
             Task {
-                fetchedImage = await viewModel.fetchImage(from: "https://images.unsplash.com/photo-1491895200222-0fc4a4c35e18?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w2OTY1ODd8MHwxfHNlYXJjaHwxfHxwYXR0ZXJufGVufDB8fHx8MTczNjgwMjcyNHww&ixlib=rb-4.0.3&q=80&w=400")
+                await viewModel.fetchImages()
             }
+        }
+    }
+
+    var imageBigHScroll:some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 0) {
+                ForEach(viewModel.images.indices, id: \.self) { index in
+                    ZStack {
+                        AsyncImage(url: URL(string: viewModel.images[index].urls.regular)) { image in
+                            image
+                                .centerCropped()
+                                .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
+                        } placeholder: {
+                            ProgressView()
+                                .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height - 100)
+                        }
+                    }
+                    .id(index) // Attach an ID for scroll synchronization
+                }
+            }
+        }
+    }
+
+    var imageSmallHScroll: some View {
+        SmallHScrollView(selectedImageIndex: $selectedImageIndex)
+            .environmentObject(viewModel)
+            .padding(.bottom, 10)
+    }
+
+}
+
+
+
+
+extension Image {
+    func centerCropped() -> some View {
+        GeometryReader { geo in
+            self
+                .resizable()
+                .scaledToFill()
+                .frame(width: geo.size.width, height: geo.size.height)
+                .clipped()
+                .ignoresSafeArea()
         }
     }
 }
 
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
+struct ScrollViewProxyKey: EnvironmentKey {
+    static let defaultValue: ScrollViewProxy? = nil
+}
+
+extension EnvironmentValues {
+    var scrollViewProxy: ScrollViewProxy? {
+        get { self[ScrollViewProxyKey.self] }
+        set { self[ScrollViewProxyKey.self] = newValue }
     }
 }
+
+

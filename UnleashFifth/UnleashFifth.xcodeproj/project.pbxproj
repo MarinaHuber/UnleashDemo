@@ -30,6 +30,11 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		9C2483732D36C01E00F78998 /* Preview Content */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
 		9C84F1312D34525400E68DB4 /* UnleashFifth */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = UnleashFifth;
@@ -38,11 +43,6 @@
 		9C84F1422D34525600E68DB4 /* UnleashFifthTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = UnleashFifthTests;
-			sourceTree = "<group>";
-		};
-		9C84F14C2D34525700E68DB4 /* UnleashFifthUITests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = UnleashFifthUITests;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -76,8 +76,8 @@
 			isa = PBXGroup;
 			children = (
 				9C84F1312D34525400E68DB4 /* UnleashFifth */,
+				9C2483732D36C01E00F78998 /* Preview Content */,
 				9C84F1422D34525600E68DB4 /* UnleashFifthTests */,
-				9C84F14C2D34525700E68DB4 /* UnleashFifthUITests */,
 				9C84F1302D34525400E68DB4 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -108,6 +108,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
+				9C2483732D36C01E00F78998 /* Preview Content */,
 				9C84F1312D34525400E68DB4 /* UnleashFifth */,
 			);
 			name = UnleashFifth;
@@ -152,9 +153,6 @@
 			);
 			dependencies = (
 				9C84F14B2D34525700E68DB4 /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				9C84F14C2D34525700E68DB4 /* UnleashFifthUITests */,
 			);
 			name = UnleashFifthUITests;
 			packageProductDependencies = (
@@ -395,7 +393,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"UnleashFifth/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = HBS2B82CVU;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -424,7 +422,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"UnleashFifth/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = HBS2B82CVU;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;

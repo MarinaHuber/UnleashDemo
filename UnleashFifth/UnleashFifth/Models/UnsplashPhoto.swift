@@ -2,21 +2,25 @@
 //  File.swift
 //  UnleashFifth
 //
-//  Created by Marina Huber on 14.01.2025..
+//  Created by Marina Huber on 12.01.2025..
 //
 
 import Foundation
 
-struct UnsplashPhoto: Codable {
+struct UnsplashResponse: Codable {
+    let results: [UnsplashPhoto]
+}
+
+struct UnsplashPhoto: Codable, Identifiable {
     let id: String
     let urls: UnsplashPhotoUrls
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
 }
 
 struct UnsplashPhotoUrls: Codable {
     let raw, full, regular, small: String
     let thumb: String
-
-    enum CodingKeys: String, CodingKey {
-        case raw, full, regular, small, thumb
-    }
 }

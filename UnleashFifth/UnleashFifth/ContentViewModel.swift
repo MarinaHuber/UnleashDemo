@@ -2,29 +2,28 @@
 //  ContentViewModel.swift
 //  UnleashFifth
 //
-//  Created by Marina Huber on 14.01.2025..
+//  Created by Marina Huber on 12.01.2025..
 //
 
 import Foundation
 import SwiftUI
 
+@MainActor
 class ContentViewModel: ObservableObject {
+    @Published var images: [UnsplashPhoto] = []
 
-    func fetchImage(from urlString: String) async -> Image? {
-        guard let url = URL(string: urlString) else {
-            return nil
-        }
-
+    func fetchImages() async {
         do {
-            let (data, _) = try await URLSession.shared.data(from: url)
-            if let uiImage = UIImage(data: data) {
-                return Image(uiImage: uiImage)
-            } else {
-                return nil
+            await APIServiceLoader.client.request(.search(), model: UnsplashResponse.self) { result in
+                switch result {
+                case .success(let deserializedData):
+                    Task {
+                        self.images = deserializedData.results
+                    }
+                case .failure(let error):
+                    print("error\(error)")
+                }
             }
-        } catch {
-            print("Failed to fetch image: \(error)")
-            return nil
         }
     }
 

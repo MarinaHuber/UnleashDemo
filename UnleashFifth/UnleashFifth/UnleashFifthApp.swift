@@ -9,9 +9,10 @@ import SwiftUI
 
 @main
 struct UnleashFifthApp: App {
+    @StateObject var viewModel = ContentViewModel()
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ContentView(viewModel: viewModel)
         }
     }
 }
