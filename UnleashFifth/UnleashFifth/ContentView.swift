@@ -9,7 +9,6 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var selectedImageIndex: Int? = nil
-    let colors: [Color] = [.blue, .pink, .cyan, .purple, .orange, .yellow]
     @State private var fetchedImage: Image?
     @StateObject var viewModel = ContentViewModel()
 
@@ -54,8 +53,6 @@ struct ContentView: View {
     }
 
 }
-
-
 
 
 extension Image {
