@@ -21,7 +21,7 @@ struct ContentView: View {
             }
         }.onAppear {
             Task {
-                await viewModel.fetchImages()
+                viewModel.fetchImages()
             }
         }
     }

@@ -5,27 +5,29 @@
 //  Created by Marina Huber on 12.01.2025..
 //
 
+import Combine
 import Foundation
 import SwiftUI
 
-@MainActor
 class ContentViewModel: ObservableObject {
     @Published var images: [UnsplashPhoto] = []
+    private var cancellables: AnyCancellable?
 
-    func fetchImages() async {
-        do {
-            await APIServiceLoader.client.request(.search(), model: UnsplashResponse.self) { result in
-                switch result {
-                case .success(let deserializedData):
-                    Task {
-                        self.images = deserializedData.results
+    func fetchImages() {
+        cancellables = APIServiceLoader.client.request(.search(), model: UnsplashResponse.self)
+            .receive(on: DispatchQueue.main)
+            .sink(
+                receiveCompletion: { completion in
+                    switch completion {
+                    case .finished:
+                        print("Publisher stopped observing")
+                    case .failure(let error):
+                        print("Error: \(error) passed to our future (single value expected)")
                     }
-                case .failure(let error):
-                    print("error\(error)")
-                }
-            }
-        }
+                },
+                receiveValue: { [weak self] deserializedData in
+                    self?.images = deserializedData.results
+                })
     }
-
-    
 }
+
