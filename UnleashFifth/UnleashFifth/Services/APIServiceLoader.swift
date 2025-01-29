@@ -18,7 +18,7 @@ struct APIServiceLoader {
     static let client = APIServiceLoader()
     private init() {}
 
-    func request<T: Decodable>(_ endpoint: Endpoint, model: T.Type, completion: @escaping (Result<T, APIServiceError>) -> ()) async {
+    func request<T: Decodable>(_ endpoint: Endpoint, model: T.Type, completion: @escaping (Result<T, APIServiceError>) -> ()) {
 
         guard let url = endpoint.url else {
             return completion(.failure(.responseError))

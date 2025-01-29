@@ -15,14 +15,25 @@ struct ContentView: View {
     var body: some View {
         ScrollViewReader { scrollProxy in
             ZStack(alignment: .bottom) {
-                imageBigHScroll
-                imageSmallHScroll
-                    .environment(\.scrollViewProxy, scrollProxy)
+                if viewModel.images.isEmpty {
+                    ProgressView("Loading pictures...")
+                } else {
+                    imageBigHScroll
+                    imageSmallHScroll
+                        .environment(\.scrollViewProxy, scrollProxy)
+                    Button("Load more..", action: viewModel.fetchImages)
+                        .padding()
+                        .frame(maxWidth: 200)
+                        .foregroundColor(.white)
+                        .background(.blue)
+                        .cornerRadius(10)
+                        .position(CGPoint(x: 200, y: 500))
+                }
             }
-        }.onAppear {
-            Task {
-                await viewModel.fetchImages()
-            }
+        }
+        .scrollDisabled(viewModel.isLoadingMore)
+        .onAppear {
+            viewModel.fetchImages()
         }
     }
 
@@ -31,7 +42,7 @@ struct ContentView: View {
             HStack(spacing: 0) {
                 ForEach(viewModel.images.indices, id: \.self) { index in
                     ZStack {
-                        AsyncImage(url: URL(string: viewModel.images[index].urls.regular)) { image in
+                        AsyncImage(url: URL(string: viewModel.images[index].urls.small)) { image in
                             image
                                 .centerCropped()
                                 .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
@@ -41,13 +52,14 @@ struct ContentView: View {
                         }
                     }
                     .id(index) // Attach an ID for scroll synchronization
+                    
                 }
             }
         }
     }
 
     var imageSmallHScroll: some View {
-        SmallHScrollView(selectedImageIndex: $selectedImageIndex)
+        SmallHScrollView(selectedImageIndex: $selectedImageIndex, viewModel: viewModel)
             .environmentObject(viewModel)
             .padding(.bottom, 10)
     }
