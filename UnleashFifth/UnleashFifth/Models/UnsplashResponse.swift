@@ -8,19 +8,16 @@
 import Foundation
 
 struct UnsplashResponse: Codable {
-    let results: [UnsplashPhoto]
+    var totalPages: Int = 0
+    let results: [UnsplashImage]
 }
 
-struct UnsplashPhoto: Codable, Identifiable {
+struct UnsplashImage: Codable, Identifiable {
     let id: String
-    let urls: UnsplashPhotoUrls
-
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
-    }
+    let urls: UnsplashImageUrls
 }
 
-struct UnsplashPhotoUrls: Codable {
+struct UnsplashImageUrls: Codable {
     let raw, full, regular, small: String
     let thumb: String
 }

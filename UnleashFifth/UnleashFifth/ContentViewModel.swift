@@ -10,11 +10,11 @@ import Foundation
 import SwiftUI
 
 class ContentViewModel: ObservableObject {
-    @Published var images: [UnsplashPhoto] = []
+    @Published var images: [UnsplashImage] = []
     private var cancellables: AnyCancellable?
 
-    func fetchImages() {
-        cancellables = APIServiceLoader.client.request(.search(), model: UnsplashResponse.self)
+    func fetchImages(page: Int) {
+        cancellables = APIServiceLoader.client.request(.search(page: page), model: UnsplashResponse.self)
             .receive(on: DispatchQueue.main)
             .sink(
                 receiveCompletion: { completion in

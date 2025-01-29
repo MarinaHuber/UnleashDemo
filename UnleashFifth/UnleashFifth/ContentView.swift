@@ -21,7 +21,7 @@ struct ContentView: View {
             }
         }.onAppear {
             Task {
-                viewModel.fetchImages()
+                viewModel.fetchImages(page: 1)
             }
         }
     }
@@ -47,7 +47,7 @@ struct ContentView: View {
     }
 
     var imageSmallHScroll: some View {
-        SmallHScrollView(selectedImageIndex: $selectedImageIndex)
+        SmallHScrollView(selectedImageIndex: $selectedImageIndex, viewModel: viewModel)
             .environmentObject(viewModel)
             .padding(.bottom, 10)
     }
