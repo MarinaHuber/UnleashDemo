@@ -16,12 +16,18 @@ struct SmallHScrollView: View {
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 10) {
-                ForEach(viewModel.images.indices, id: \.self) { index in
-                    SmallImage(selectedImageIndex: $selectedImageIndex, image: viewModel.images[index], index: index)
-                        .onAppear {
-                            viewModel.loadMoreContent(currentItem: viewModel.images[index])
-                        }
-                        .environment(\.scrollViewProxy, scrollProxy)
+                if viewModel.isLoading && viewModel.images.isEmpty {
+                    ProgressView("Loading Images...")
+                        .progressViewStyle(CircularProgressViewStyle())
+                        .scaleEffect(1.5)
+                } else {
+                    ForEach(viewModel.images.indices, id: \.self) { index in
+                        SmallImage(selectedImageIndex: $selectedImageIndex, image: viewModel.images[index], index: index)
+                            .onAppear {
+                                viewModel.loadMoreContent(currentItem: viewModel.images[index])
+                            }
+                            .environment(\.scrollViewProxy, scrollProxy)
+                    }
                 }
             }
             .padding()

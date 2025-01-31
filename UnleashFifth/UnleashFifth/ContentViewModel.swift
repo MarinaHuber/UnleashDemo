@@ -10,6 +10,7 @@ import SwiftUI
 
 class ContentViewModel: ObservableObject {
     @Published var images: [UnsplashImage] = []
+    @Published var isLoading: Bool = false
     private var currentPage: Int = 1
     private var totalPages = 0
 
@@ -19,7 +20,6 @@ class ContentViewModel: ObservableObject {
 
     func fetchImages() {
         //Unsplash's API rate limits (50 requests in hour) so delay here
-       // DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
         currentPage = 1 // Clear existing page for start
         images = [] // Clear existing patterns for pagination
         self.loadImages()
@@ -28,6 +28,9 @@ class ContentViewModel: ObservableObject {
 
         // Load more images with pagination
     func loadImages() {
+        guard !isLoading else { return }
+
+        isLoading = true
         APIServiceLoader.client.request(.search(page: currentPage), model: UnsplashResponse.self) { [weak self] result in
             guard let self = self else { return }
 
@@ -42,6 +45,7 @@ class ContentViewModel: ObservableObject {
                 case .failure(let error):
                     print("Error loading images: \(error)")
                 }
+                self.isLoading = false
             }
         }
     }

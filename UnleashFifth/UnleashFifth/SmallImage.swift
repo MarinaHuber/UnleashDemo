@@ -11,6 +11,7 @@ struct SmallImage: View {
     @Binding var selectedImageIndex: Int?
     @Environment(\.scrollViewProxy) private var scrollProxy
     @EnvironmentObject var viewModel: ContentViewModel
+    @State private var isImageLoaded: Bool = false
     let image: UnsplashImage
     let index: Int
 
@@ -38,6 +39,13 @@ struct SmallImage: View {
                 @unknown default:
                     EmptyView()
                 }
+            }
+            if viewModel.isLoading && !viewModel.images.isEmpty {
+                Color.secondary
+                    .frame(width: 50, height: 50)
+                    .cornerRadius(10)
+                ProgressView()
+                    .padding()
             }
         }
         .onTapGesture {
