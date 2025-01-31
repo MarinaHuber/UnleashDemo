@@ -31,7 +31,6 @@ struct ContentView: View {
                 }
             }
         }
-        .scrollDisabled(viewModel.isLoadingMore)
         .onAppear {
             viewModel.fetchImages()
         }
