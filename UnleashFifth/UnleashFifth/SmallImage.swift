@@ -12,26 +12,25 @@ struct SmallImage: View {
     @Environment(\.scrollViewProxy) private var scrollProxy
     @EnvironmentObject var viewModel: ContentViewModel
     @State private var isImageLoaded: Bool = false
-    let image: UnsplashImage
+    let imageUnsplash: UnsplashImage
     let index: Int
 
     var body: some View {
         ZStack {
             if selectedImageIndex == index {
-                    // Highlight selection red
+                // Highlight selection red
                 RoundedRectangle(cornerRadius: 10)
                     .stroke(.red, lineWidth: 5)
                     .frame(width: 50, height: 50)
             }
-            AsyncImage(url: URL(string: image.urls.thumb)) { phase in
+                // Image
+            AsyncImage(url: URL(string: imageUnsplash.urls.thumb)) { phase in
                 switch phase {
                 case .empty:
                     ProgressView()
-                        .frame(width: 50, height: 50)
                 case .success(let image):
                     image
                         .centerCropped()
-                        .frame(width: 50, height: 50)
                         .cornerRadius(10)
                 case .failure:
                     Image(systemName: "")
@@ -39,7 +38,8 @@ struct SmallImage: View {
                 @unknown default:
                     EmptyView()
                 }
-            }
+            }.frame(width: 50, height: 50)
+
             if viewModel.isLoading && !viewModel.images.isEmpty {
                 Color.secondary
                     .frame(width: 50, height: 50)

@@ -14,10 +14,6 @@ class ContentViewModel: ObservableObject {
     private var currentPage: Int = 1
     private var totalPages = 0
 
-    private var canLoadMorePages: Bool {
-        currentPage < totalPages
-    }
-
     func fetchImages() {
         //Unsplash's API rate limits (50 requests in hour) so delay here
         currentPage = 1
