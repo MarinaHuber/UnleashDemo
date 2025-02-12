@@ -1,5 +1,4 @@
 # UnleashDemo
-For Fifth image assignment
 
 Open source API: https://unsplash.com/documentation#search-photos
 
