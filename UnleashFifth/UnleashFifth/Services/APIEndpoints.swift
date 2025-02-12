@@ -13,7 +13,7 @@ struct Endpoint {
 }
 
 extension Endpoint {
-    static func search(_ query: String = "pattern", page: Int) -> Endpoint {
+    static func search(_ query: String = "pattern orange cat", page: Int) -> Endpoint {
         return Endpoint(
             path: "/search/photos",
             queryItems: [

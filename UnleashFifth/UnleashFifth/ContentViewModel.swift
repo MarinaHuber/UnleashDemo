@@ -20,13 +20,11 @@ class ContentViewModel: ObservableObject {
 
     func fetchImages() {
         //Unsplash's API rate limits (50 requests in hour) so delay here
-        currentPage = 1 // Clear existing page for start
+        currentPage = 1
         images = [] // Clear existing patterns for pagination
         self.loadImages()
-      //  }
     }
 
-        // Load more images with pagination
     func loadImages() {
         guard !isLoading else { return }
 
@@ -53,9 +51,11 @@ class ContentViewModel: ObservableObject {
         //MARK: - PAGINATION
     func loadMoreContent(currentItem: UnsplashImage?) {
         guard currentPage < totalPages else { return }
+
         if let currentItem = currentItem,
            let lastItem = images.last,
            currentItem.id == lastItem.id {
+
             currentPage += 1
             loadImages()
         }
