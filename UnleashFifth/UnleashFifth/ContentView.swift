@@ -9,7 +9,6 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var selectedImageIndex: Int? = nil
-    @State private var fetchedImage: Image?
     @StateObject var viewModel = ContentViewModel()
 
     var body: some View {

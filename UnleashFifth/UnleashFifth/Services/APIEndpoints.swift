@@ -18,7 +18,7 @@ extension Endpoint {
         return Endpoint(
             path: "/search/photos",
             queryItems: [
-                URLQueryItem(name: "page", value: String(3)),
+                URLQueryItem(name: "page", value: String(page)),
                 URLQueryItem(name: "per_page", value: "30"),
                 URLQueryItem(name: "query", value: query),
                 URLQueryItem(name: "client_id", value: Keys.publicKey)

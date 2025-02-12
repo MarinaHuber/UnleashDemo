@@ -17,17 +17,10 @@ class ContentViewModel: ObservableObject {
     private var totalPages = 0
 
     func fetchImages() {
-        //Unsplash's API rate limits (50 requests in hour) so delay here
-        currentPage = 1
-        images = [] // Clear existing patterns for pagination
-        self.fetchImages(page: currentPage)
-    }
-
-    func fetchImages(page: Int) {
         guard !isLoading else { return }
 
         isLoading = true
-        cancellables = APIServiceLoader.client.request(.search(page: page), model: UnsplashResponse.self)
+        cancellables = APIServiceLoader.client.request(.search(page: currentPage), model: UnsplashResponse.self)
             .receive(on: DispatchQueue.main)
             .sink(
                 receiveCompletion: { completion in
@@ -40,11 +33,10 @@ class ContentViewModel: ObservableObject {
                     }
                 },
                 receiveValue: { [weak self] deserializedData in
-                    self?.images = deserializedData.results
+
                     self?.totalPages = deserializedData.totalPages
                     self?.images.append(contentsOf: deserializedData.results)
                     print("Loaded page \(String(describing: self?.currentPage)) of \(String(describing: self?.totalPages))")
-
                 })
     }
 
@@ -57,7 +49,7 @@ class ContentViewModel: ObservableObject {
            currentItem.id == lastItem.id {
 
             currentPage += 1
-            self.fetchImages(page: currentPage)
+            self.fetchImages()
         }
     }
 }
