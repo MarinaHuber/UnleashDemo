@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Combine
 
 enum APIServiceError: Error {
     case responseError
@@ -18,40 +19,47 @@ struct APIServiceLoader {
     static let client = APIServiceLoader()
     private init() {}
 
-    func request<T: Decodable>(_ endpoint: Endpoint, model: T.Type, completion: @escaping (Result<T, APIServiceError>) -> ()) {
+    func request<T: Decodable>(_ endpoint: Endpoint, model: T.Type) -> Future<T, APIServiceError> {
+        return Future { promise in
+            guard let url = endpoint.url else {
+                return promise(.failure(.responseError))
+            }
 
-        guard let url = endpoint.url else {
-            return completion(.failure(.responseError))
+            let task = URLSession.shared.dataTask(with: url) { data, response, error in
+                if let _ = error {
+                    promise(.failure(.responseError))
+                    return
+                }
+
+                guard let response = response as? HTTPURLResponse, response.statusCode == 200 else {
+                    promise(.failure(.responseError))
+                    return
+                }
+
+                guard let data = data else {
+                    promise(.failure(.responseError))
+                    return
+                }
+
+                do {
+                    let decoder = JSONDecoder()
+                    decoder.keyDecodingStrategy = .convertFromSnakeCase
+                    decoder.dateDecodingStrategy = .iso8601
+                    let model = try decoder.decode(T.self, from: data)
+
+                    if let data = model as? UnsplashResponse, data.results.isEmpty {
+                        promise(.failure(.responseError))
+                        return
+                    }
+
+                    promise(.success(model))
+                } catch {
+                    promise(.failure(.parseError(error)))
+                }
+            }
+
+            task.resume()
         }
-
-        let task = URLSession.shared.dataTask(with: url) { data, response, error in
-
-            if let _ = error {
-                completion(.failure(.responseError))
-                return
-            }
-
-            guard let response = response as? HTTPURLResponse, response.statusCode == 200 else {
-                completion(.failure(.responseError))
-                return
-            }
-
-            guard let data = data else {
-                completion(.failure(.responseError))
-                return
-            }
-            do {
-                let decoder                     = JSONDecoder()
-                decoder.keyDecodingStrategy     = .convertFromSnakeCase
-                decoder.dateDecodingStrategy    = .iso8601
-                let model                       = try decoder.decode(T.self, from: data)
-
-                completion(.success(model))
-            } catch {
-                completion(.failure(.parseError(error)))
-            }
-        }
-        task.resume()
     }
 }
 

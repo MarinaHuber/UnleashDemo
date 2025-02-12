@@ -10,14 +10,15 @@ import Foundation
 struct Endpoint {
     let path: String
     let queryItems: [URLQueryItem]
+    //TODO: missing timeOut
 }
 
 extension Endpoint {
-    static func search(_ query: String = "pattern orange door", page: Int) -> Endpoint {
+    static func search(_ query: String = "pattern orange", page: Int) -> Endpoint {
         return Endpoint(
             path: "/search/photos",
             queryItems: [
-                URLQueryItem(name: "page", value: String(page)),
+                URLQueryItem(name: "page", value: String(3)),
                 URLQueryItem(name: "per_page", value: "30"),
                 URLQueryItem(name: "query", value: query),
                 URLQueryItem(name: "client_id", value: Keys.publicKey)

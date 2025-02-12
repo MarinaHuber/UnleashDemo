@@ -41,7 +41,7 @@ struct ContentView: View {
             HStack(spacing: 0) {
                 ForEach(viewModel.images.indices, id: \.self) { index in
                     ZStack {
-                        AsyncImage(url: URL(string: viewModel.images[index].urls.small)) { image in
+                        AsyncImage(url: URL(string: viewModel.images[index].urls.regular)) { image in
                             image
                                 .centerCropped()
                                 .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)

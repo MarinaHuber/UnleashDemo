@@ -11,7 +11,6 @@ struct SmallImage: View {
     @Binding var selectedImageIndex: Int?
     @Environment(\.scrollViewProxy) private var scrollProxy
     @EnvironmentObject var viewModel: ContentViewModel
-    @State private var isImageLoaded: Bool = false
     let imageUnsplash: UnsplashImage
     let index: Int
 

@@ -5,12 +5,14 @@
 //  Created by Marina Huber on 12.01.2025..
 //
 
+import Combine
 import Foundation
 import SwiftUI
 
 class ContentViewModel: ObservableObject {
     @Published var images: [UnsplashImage] = []
     @Published var isLoading: Bool = false
+    private var cancellables: AnyCancellable?
     private var currentPage: Int = 1
     private var totalPages = 0
 
@@ -18,30 +20,32 @@ class ContentViewModel: ObservableObject {
         //Unsplash's API rate limits (50 requests in hour) so delay here
         currentPage = 1
         images = [] // Clear existing patterns for pagination
-        self.loadImages()
+        self.fetchImages(page: currentPage)
     }
 
-    func loadImages() {
+    func fetchImages(page: Int) {
         guard !isLoading else { return }
 
         isLoading = true
-        APIServiceLoader.client.request(.search(page: currentPage), model: UnsplashResponse.self) { [weak self] result in
-            guard let self = self else { return }
+        cancellables = APIServiceLoader.client.request(.search(page: page), model: UnsplashResponse.self)
+            .receive(on: DispatchQueue.main)
+            .sink(
+                receiveCompletion: { completion in
+                    switch completion {
+                    case .finished:
+                        print("Publisher stopped observing")
+                    case .failure(let error):
+                        print("Error: \(error) passed to our future (single value expected)")
+                        self.isLoading = false
+                    }
+                },
+                receiveValue: { [weak self] deserializedData in
+                    self?.images = deserializedData.results
+                    self?.totalPages = deserializedData.totalPages
+                    self?.images.append(contentsOf: deserializedData.results)
+                    print("Loaded page \(String(describing: self?.currentPage)) of \(String(describing: self?.totalPages))")
 
-            DispatchQueue.main.async {
-                switch result {
-                case .success(let response):
-                    self.totalPages = response.totalPages
-                    self.images.append(contentsOf: response.results)
-
-                    print("Loaded page \(self.currentPage) of \(self.totalPages)")
-
-                case .failure(let error):
-                    print("Error loading images: \(error)")
-                }
-                self.isLoading = false
-            }
-        }
+                })
     }
 
         //MARK: - PAGINATION
@@ -53,7 +57,8 @@ class ContentViewModel: ObservableObject {
            currentItem.id == lastItem.id {
 
             currentPage += 1
-            loadImages()
+            self.fetchImages(page: currentPage)
         }
     }
 }
+

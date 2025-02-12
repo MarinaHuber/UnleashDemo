@@ -22,7 +22,7 @@ struct SmallHScrollView: View {
                         .scaleEffect(1.5)
                 } else {
                     ForEach(viewModel.images.indices, id: \.self) { index in
-                        SmallImage(selectedImageIndex: $selectedImageIndex, image: viewModel.images[index], index: index)
+                        SmallImage(selectedImageIndex: $selectedImageIndex, imageUnsplash: viewModel.images[index], index: index)
                             .onAppear {
                                 viewModel.loadMoreContent(currentItem: viewModel.images[index])
                             }

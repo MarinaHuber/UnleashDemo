@@ -1,5 +1,5 @@
-# Unsplash Demo
-Pagination in SwiftUI 🩶
+# UnleashDemo
+Pgination in SwiftUI
 Open source API: https://unsplash.com/documentation#search-photos
 
 
