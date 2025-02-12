@@ -8,13 +8,17 @@
 import Foundation
 
 struct UnsplashResponse: Codable {
-    var totalPages: Int = 0
+    let totalPages: Int
     let results: [UnsplashImage]
 }
 
-struct UnsplashImage: Codable, Identifiable {
+struct UnsplashImage: Codable, Identifiable, Equatable {
     let id: String
     let urls: UnsplashImageUrls
+
+    static func == (lhs: UnsplashImage, rhs: UnsplashImage) -> Bool {
+        return lhs.id == rhs.id
+    }
 }
 
 struct UnsplashImageUrls: Codable {

@@ -9,26 +9,41 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var selectedImageIndex: Int? = nil
-    @State private var fetchedImage: Image?
     @StateObject var viewModel = ContentViewModel()
 
     var body: some View {
         ScrollViewReader { scrollProxy in
             ZStack(alignment: .bottom) {
-                imageBigHScroll
-                imageSmallHScroll
-                    .environment(\.scrollViewProxy, scrollProxy)
+                if viewModel.images.isEmpty {
+                    ProgressView("Loading pictures...")
+                } else {
+                    imageBigHScroll
+                    imageSmallHScroll
+                        .environment(\.scrollViewProxy, scrollProxy)
+                        // Centered Load More Button
+                    VStack {
+                        Spacer() // Pushes the button to the center vertically
+                        Button("Load more...") {
+                            viewModel.fetchImages()
+                        }
+                        .padding()
+                        .frame(maxWidth: 200)
+                        .foregroundColor(.white)
+                        .background(Color.blue)
+                        .cornerRadius(10)
+                        .padding(.bottom, 150)
+                    }
+                }
             }
-        }.onAppear {
-            Task {
-                viewModel.fetchImages(page: 1)
-            }
+        }
+        .onAppear {
+            viewModel.fetchImages()
         }
     }
 
     var imageBigHScroll:some View {
         ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 0) {
+            LazyHStack(spacing: 0) {
                 ForEach(viewModel.images.indices, id: \.self) { index in
                     ZStack {
                         AsyncImage(url: URL(string: viewModel.images[index].urls.regular)) { image in
@@ -41,6 +56,7 @@ struct ContentView: View {
                         }
                     }
                     .id(index) // Attach an ID for scroll synchronization
+                    
                 }
             }
         }
@@ -49,10 +65,13 @@ struct ContentView: View {
     var imageSmallHScroll: some View {
         SmallHScrollView(selectedImageIndex: $selectedImageIndex, viewModel: viewModel)
             .environmentObject(viewModel)
-            .padding(.bottom, 10)
+            .frame(height: 70)
+            .padding(.bottom, 20)
     }
 
 }
+
+
 
 
 extension Image {
