@@ -11,45 +11,40 @@ import SwiftUI
 
 class ContentViewModel: ObservableObject {
     @Published var images: [UnsplashImage] = []
-    @Published var isLoading: Bool = false
     private var cancellables: AnyCancellable?
-    private var currentPage: Int = 1
-    private var totalPages = 0
+    var currentPage: Int = 1
+    private var totalPages: Int = 5 // Limit to max pages to fetch due Unsplash hour limit
 
     func fetchImages() {
-        guard !isLoading else { return }
 
-        isLoading = true
-        cancellables = APIServiceLoader.client.request(.search(page: currentPage), model: UnsplashResponse.self)
-            .receive(on: DispatchQueue.main)
-            .sink(
-                receiveCompletion: { completion in
-                    switch completion {
-                    case .finished:
-                        print("Publisher stopped observing")
-                    case .failure(let error):
-                        print("Error: \(error) passed to our future (single value expected)")
-                        self.isLoading = false
-                    }
-                },
-                receiveValue: { [weak self] deserializedData in
+        guard currentPage <= totalPages else {
+            print("Reached max pages to fetch, exiting fetchImages.")
+            return
+        }
 
-                    self?.totalPages = deserializedData.totalPages
-                    self?.images.append(contentsOf: deserializedData.results)
-                    print("Loaded page \(String(describing: self?.currentPage)) of \(String(describing: self?.totalPages))")
-                })
-    }
+        let endpoint = Endpoint.search(page: currentPage)
 
-        //MARK: - PAGINATION
-    func loadMoreContent(currentItem: UnsplashImage?) {
-        guard currentPage < totalPages else { return }
+        DispatchQueue.global(qos: .background).async {
+            self.cancellables = APIServiceLoader.client.request(endpoint, model: UnsplashResponse.self)
+                .receive(on: DispatchQueue.main)
+                .sink(
+                    receiveCompletion: { completion in
+                        switch completion {
+                        case .finished:
+                            print("Publisher stopped observing")
+                        case .failure(let error):
+                            print("Error: \(error) passed to our future (single value expected)")
+                        }
+                    },
+                    receiveValue: { deserializedData in
+                        DispatchQueue.main.async {
+                            self.images.append(contentsOf: deserializedData.results)
+                            print("Loaded page \(self.currentPage) of \(self.totalPages)")
 
-        if let currentItem = currentItem,
-           let lastItem = images.last,
-           currentItem.id == lastItem.id {
-
-            currentPage += 1
-            self.fetchImages()
+                            self.currentPage += 1  // Increment the current page
+                            self.fetchImages()
+                        }
+                    })
         }
     }
 }

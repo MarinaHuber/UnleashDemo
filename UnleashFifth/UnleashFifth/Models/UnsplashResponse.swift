@@ -12,12 +12,12 @@ struct UnsplashResponse: Codable {
     let results: [UnsplashImage]
 }
 
-struct UnsplashImage: Codable, Identifiable {
+struct UnsplashImage: Codable, Identifiable, Equatable {
     let id: String
     let urls: UnsplashImageUrls
 
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
+    static func == (lhs: UnsplashImage, rhs: UnsplashImage) -> Bool {
+        return lhs.id == rhs.id
     }
 }
 

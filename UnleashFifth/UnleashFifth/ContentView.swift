@@ -20,13 +20,19 @@ struct ContentView: View {
                     imageBigHScroll
                     imageSmallHScroll
                         .environment(\.scrollViewProxy, scrollProxy)
-                    Button("Load more..", action: viewModel.fetchImages)
+                        // Centered Load More Button
+                    VStack {
+                        Spacer() // Pushes the button to the center vertically
+                        Button("Load more...") {
+                            viewModel.fetchImages()
+                        }
                         .padding()
                         .frame(maxWidth: 200)
                         .foregroundColor(.white)
-                        .background(.blue)
+                        .background(Color.blue)
                         .cornerRadius(10)
-                        .position(CGPoint(x: 200, y: 500))
+                        .padding(.bottom, 150)
+                    }
                 }
             }
         }
@@ -37,7 +43,7 @@ struct ContentView: View {
 
     var imageBigHScroll:some View {
         ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 0) {
+            LazyHStack(spacing: 0) {
                 ForEach(viewModel.images.indices, id: \.self) { index in
                     ZStack {
                         AsyncImage(url: URL(string: viewModel.images[index].urls.regular)) { image in
@@ -59,10 +65,13 @@ struct ContentView: View {
     var imageSmallHScroll: some View {
         SmallHScrollView(selectedImageIndex: $selectedImageIndex, viewModel: viewModel)
             .environmentObject(viewModel)
-            .padding(.bottom, 10)
+            .frame(height: 70)
+            .padding(.bottom, 20)
     }
 
 }
+
+
 
 
 extension Image {

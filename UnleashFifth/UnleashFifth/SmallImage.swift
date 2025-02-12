@@ -39,7 +39,7 @@ struct SmallImage: View {
                 }
             }.frame(width: 50, height: 50)
 
-            if viewModel.isLoading && viewModel.images.isEmpty {
+            if viewModel.images.isEmpty {
                 Color.secondary
                     .frame(width: 50, height: 50)
                     .cornerRadius(10)
